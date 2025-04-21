@@ -61,7 +61,7 @@ contract GenomicDataStorage is IERC165 {
     //     users[userAddress] = User(Role.NormalUser, true);
     // }
     
-    function uploadFile(string memory ipfsHash,string memory fileName, string memory cid, string memory owner, string memory fileType, uint256 fileSize) external payable {
+    function uploadFile(string memory ipfsHash,string memory fileName, string memory cid, string memory fileType, uint256 fileSize) external payable {
         // Require a minimum payment (e.g., 0.01 Ether)
         require(msg.value >= 0.01 ether, "Insufficient payment");
         // Ensure the file doesn't already exist

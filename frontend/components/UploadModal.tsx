@@ -7,6 +7,8 @@ import {pinata} from '../utils/pinata.js'
 import { getContract } from "../utils/getContract";
 import { hashCID } from "../utils/generateHash";
 import { ethers } from 'ethers';
+import { CID } from 'ipfs-http-client';
+import { uploadCid } from 'pinata';
 
 
 interface UploadModalProps {
@@ -23,9 +25,11 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
   const [isUploaded, setIsUploaded] = useState(false);
   const [ipfsHash, setIpfsHash] = useState('');
   const [fileName, setFileName] = useState('');
-  const [fileType, setFileType] = useState('fastq');
+  const [fileType, setFileType] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const [fileSize, setFileSize] = useState<number>(0);
+  const [Cid, setCid] = useState('');
 
   const uploadToIPFS = async () => {
     try {
@@ -36,8 +40,10 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
         console.log("File uploaded to IPFS:", upload);
 
         const cid = upload.cid;
-        const hashedCID = hashCID(cid);
-        setIpfsHash(hashedCID);
+        console.log("CID is this:", cid);
+        await setCid(cid);
+        const hashedCID =await hashCID(cid);
+        await setIpfsHash(hashedCID);
 
         console.log("CID:", cid);
     } catch (error) {
@@ -52,7 +58,8 @@ const uploadFile = async () => {
     console.log("Contract instance:", contract);
     const paymentAmount = ethers.parseEther("0.1");
     console.log("IPFS Hash:", ipfsHash);
-    const tx = await contract.uploadFile(ipfsHash, {
+    console.log("File Name:", fileName, ipfsHash,Cid, fileType, fileSize);
+    const tx = await contract.uploadFile(ipfsHash, fileName, Cid, fileType, fileSize, {
       value: paymentAmount
     });
     console.log("Transaction sent:", tx);
@@ -137,6 +144,7 @@ const uploadFile = async () => {
     // Check file type if needed
     // if (!selectedFile.type.includes('fastq') && !selectedFile.type.includes('fasta')) return;
     setFile(selectedFile);
+    setFileSize(selectedFile.size);
   };
 
   const handleUpload =async () => {
