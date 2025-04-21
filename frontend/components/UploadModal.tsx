@@ -238,6 +238,7 @@ const uploadFile = async () => {
                       onChange={(e) => setFileType(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-dna-blue focus:border-dna-blue dark:bg-gray-700 dark:text-white"
                     >
+                      <option value="">Select a file type</option>
                       <option value="medical-records">Medical Records</option>
                       <option value="genomic-data">Genomic Data</option>
                       <option value="transcriptomic-data">Transcriptomic Data</option>
