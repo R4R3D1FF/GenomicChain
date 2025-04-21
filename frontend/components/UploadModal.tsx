@@ -22,6 +22,8 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
   const [ipfsHash, setIpfsHash] = useState('');
+  const [fileName, setFileName] = useState('');
+  const [fileType, setFileType] = useState('fastq');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -33,14 +35,11 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
         const upload = await pinata.upload.public.file(file);
         console.log("File uploaded to IPFS:", upload);
 
-        // const upload = await response.json();
         const cid = upload.cid;
         const hashedCID = hashCID(cid);
         setIpfsHash(hashedCID);
 
         console.log("CID:", cid);
-
-        // alert(`File uploaded! IPFS Hash: ${cid}`);
     } catch (error) {
         console.error("Error uploading to IPFS:", error);
     }
@@ -83,7 +82,6 @@ const uploadFile = async () => {
     };
   }, [isOpen, onClose]);
 
-  // Close modal with ESC key
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -144,8 +142,6 @@ const uploadFile = async () => {
   const handleUpload =async () => {
     if (!file) return;
     setIsUploading(true);
-    
-    // Simulate upload progress
     let progress = 0;
     const interval = setInterval(() => {
       progress += Math.random() * 10;
@@ -183,7 +179,7 @@ const uploadFile = async () => {
             className="fixed inset-0 bg-black bg-opacity-50"
             onClick={handleClose}
           />
-          
+
           <motion.div
             ref={modalRef}
             initial={{ opacity: 0, scale: 0.95 }}
@@ -204,16 +200,52 @@ const uploadFile = async () => {
                 <FiX className="w-5 h-5" />
               </button>
             </div>
-            
             <div className="p-6">
               {!isUploaded ? (
                 <div>
                   <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Securely upload your genomic data files. We support various formats including FASTQ, FASTA, VCF, and BAM.
+                    Securely upload your genomic data files. We support various formats including FASTQ, FASTA, VCF, BAM and more.
                   </p>
-                
-                  <div 
-                    className={`p-6 border-2 border-dashed rounded-lg ${isDragging 
+                  <div className="mb-6 space-y-4">
+                  <div>
+                    <label htmlFor="fileName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      File Name
+                    </label>
+                    <input
+                      type="text"
+                      id="fileName"
+                      value={fileName}
+                      onChange={(e) => setFileName(e.target.value)}
+                      placeholder="Enter a name for your file"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-dna-blue focus:border-dna-blue dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="fileType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      File Type
+                    </label>
+                    <select
+                      id="fileType"
+                      value={fileType}
+                      onChange={(e) => setFileType(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-dna-blue focus:border-dna-blue dark:bg-gray-700 dark:text-white"
+                    >
+                      <option value="medical-records">Medical Records</option>
+                      <option value="genomic-data">Genomic Data</option>
+                      <option value="transcriptomic-data">Transcriptomic Data</option>
+                      <option value="proteomic-data">Proteomic Data</option>
+                      <option value="epigenomic-data">Epigenomic Data</option>
+                      <option value="metabolomic-data">Metabolomic Data</option>
+                      <option value="microbiome-data">Microbiome Data</option>
+                      <option value="pharmacogenomic-data">Pharmacogenomic Data</option>
+                      <option value="forensic-evidence">Forensic Evidence</option>
+                      <option value="single-cell-omics">Single-cell Omics</option>
+                      <option value="functional-genomics">Functional Genomics</option>
+                    </select>
+                  </div>
+                </div>
+                  <div
+                    className={`p-6 border-2 border-dashed rounded-lg ${isDragging
                       ? 'border-dna-blue bg-blue-50 dark:bg-blue-900/10' 
                       : 'border-gray-300 dark:border-gray-600'}`}
                     onDragEnter={handleDragEnter}
