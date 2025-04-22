@@ -42,6 +42,9 @@ const DashboardPage = () => {
   const [contract, setContract] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [CID, setCID] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [showNameDialog, setShowNameDialog] = useState(false);
+  const [hasProfile, setHasProfile] = useState(false);
 
   const formatFileSize = (size: string) => {
     try {
@@ -56,20 +59,92 @@ const DashboardPage = () => {
   };
 
   const handleConnect = async () => {
-    const wallet = await connectWallet();
-    if (wallet) {
-      setWalletAddress(wallet.address);
-      
-      notify("Wallet connected");
-      console.log("Getting contract...");
-      const contract = await getContract();
-      setContract(contract);
-      console.log("Contract instance:", contract);
+    try {
+      const wallet = await connectWallet();
+      if (wallet) {
+        setWalletAddress(wallet.address);
+        notify("Wallet connected");
+        
+        // Check if profile exists
+        const profileExists = await checkProfileExists(wallet.address);
+        if (!profileExists) {
+          setShowNameDialog(true);
+        } else {
+          setHasProfile(true);
+        }
+
+        // Get contract instance
+        console.log("Getting contract...");
+        const contract = await getContract();
+        setContract(contract);
+        console.log("Contract instance:", contract);
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      notify("Error connecting wallet");
     }
   };
 
-  const createRequest=async (requestedTo: any, filehash: any, researchPurpose: string, fileName: any)=>{
-    try{
+  const checkProfileExists = async (address: string) => {
+    try {
+      const response = await fetch('http://localhost:4000/api/v1/profile/getProfile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ WalletAddress: address }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data) {
+          setName(data.name);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error("Error checking profile:", error);
+      return false;
+    }
+  };
+
+  const handleCreateProfile = async () => {
+    try {
+      if (!name.trim()) {
+        notify("Please enter a valid name");
+        return;
+      }
+
+      const response = await fetch('http://localhost:4000/api/v1/profile/createProfile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          WalletAddress: walletAddress, 
+          name: name 
+        }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text(); // Log the response body for debugging
+        console.error('Failed to create profile:', errorBody);
+        throw new Error(`Failed to create profile: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      notify("Profile created successfully!");
+      setShowNameDialog(false);
+      setHasProfile(true);
+    } catch (error) {
+      console.error("Error creating profile:", error);
+      notify("Error creating profile");
+    }
+  };
+
+  const createRequest = async (requestedTo: any, filehash: any, researchPurpose: string, fileName: any) => {
+    try {
       const wallet = await connectWallet();
       if (!wallet) {
         throw new Error('Failed to connect wallet');
@@ -83,23 +158,25 @@ const DashboardPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          requestedTo:requestedTo,
+          requestedTo: requestedTo,
           requestFrom: walletAddress,
-          filehash:filehash,
-          researchPurpose:researchPurpose,
-          fileName:fileName
+          filehash: filehash,
+          researchPurpose: researchPurpose,
+          fileName: fileName
         })
       });
 
-      console.log(response)
+      console.log(response);
 
       if (!response.ok) {
-        throw new Error('Failed to fetch requests');
+        throw new Error('Failed to create request');
       }
-    }catch(error){
-      console.error("error from createRequest:", error);
+      notify("Access request created successfully!");
+    } catch (error) {
+      console.error("Error from createRequest:", error);
+      notify("Error creating access request");
     }
-  }
+  };
 
   const fetchFiles = async () => {
     try {
@@ -173,10 +250,10 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
-    if (walletAddress && contract) {
+    if (walletAddress && contract && hasProfile) {
       fetchFiles();
     }
-  }, [walletAddress, contract]);
+  }, [walletAddress, contract, hasProfile]);
 
   useEffect(() => {
     if (selectedFile && CID) {
@@ -204,6 +281,38 @@ const DashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+      {/* Name Dialog Modal */}
+      {showNameDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-medium mb-4">Create Your Profile</h3>
+            <p className="mb-4">Please enter your name to create a profile</p>
+            <input
+              type="text"
+              placeholder="Enter your name"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md mb-4"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowNameDialog(false)}
+                className="px-4 py-2 rounded-md border border-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateProfile}
+                className="px-4 py-2 rounded-md bg-dna-blue text-white"
+                disabled={!name.trim()}
+              >
+                Create Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <UploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
@@ -348,8 +457,6 @@ const DashboardPage = () => {
               </p>
             </div>
           </motion.div>
-
-          {/* ... other stat cards remain the same ... */}
         </div>
 
         {/* Tabs */}
@@ -365,7 +472,6 @@ const DashboardPage = () => {
             >
               My Files
             </button>
-            {/* ... other tabs remain the same ... */}
           </nav>
         </div>
 
@@ -536,12 +642,7 @@ const DashboardPage = () => {
               </div>
             </div>
           )}
-
-          {/* ... other tab contents remain the same ... */}
         </motion.div>
-
-        {/* Notification Panel */}
-        {/* ... remains the same ... */}
       </div>
       <ToastContainer
         position="top-right"

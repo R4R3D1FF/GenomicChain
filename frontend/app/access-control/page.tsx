@@ -270,7 +270,7 @@ const AccessControlPage = () => {
         </div>
         
         {/* Search and Filter */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 mb-6">
+        {/* <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 mb-6">
           <div className="flex flex-col md:flex-row items-stretch md:items-center space-y-3 md:space-y-0 md:space-x-4">
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -291,7 +291,7 @@ const AccessControlPage = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
         
         {/* Tabs */}
         <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
@@ -479,7 +479,7 @@ const AccessControlPage = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button className="text-dna-red hover:text-dna-red-dark"
-                                onClick={() => revokeAccess(permission._id, permission.user.name, permission.files[0])}
+                                onClick={() => revokeAccess(permission.id, permission.user.name, permission.files[0])}
                               >
                                 Revoke
                               </button>
