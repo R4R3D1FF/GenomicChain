@@ -22,6 +22,11 @@ contract GenomicDataStorage is IERC165 {
         string ipfsHash;
     }
     
+    struct getFileMetaData {
+        FileMetaData fileMetaData;
+        bool hasAccess;
+    }
+    
     struct File {
         string ipfsHash;
         string cid;
@@ -85,6 +90,9 @@ contract GenomicDataStorage is IERC165 {
             cid: cid,
             idxOfMetaData: idx_Of_Meta_Data
         });
+
+        // Grant the uploader access to their own file
+        fileAccess[ipfsHash][msg.sender] = true;
     }
     
     function grantAccess(string memory ipfsHash, address sharedUser) payable external {
@@ -112,11 +120,17 @@ contract GenomicDataStorage is IERC165 {
         return files[ipfsHash].cid;
     }
 
-    function getAllFiles() external view returns (FileMetaData[] memory) {
-        FileMetaData[] memory allFiles = new FileMetaData[](filesList.length);
+    function getAllFiles() external view returns (getFileMetaData[] memory) {
+        getFileMetaData[] memory allFiles = new getFileMetaData[](filesList.length);
         for (uint256 i = 0; i < filesList.length; i++) {
-            allFiles[i] = filesList[i];
+            FileMetaData memory metaData = filesList[i];
+            bool hasAccess = (metaData.owner == msg.sender || fileAccess[metaData.ipfsHash][msg.sender]);
+            allFiles[i] = getFileMetaData({
+                fileMetaData: metaData,
+                hasAccess: hasAccess
+            });
         }
+
         return allFiles;
     }
     

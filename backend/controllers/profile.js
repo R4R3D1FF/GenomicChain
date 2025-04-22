@@ -6,6 +6,10 @@ export const createProfile = async (req, res) => {
             return res.status(400).json({ message: 'WalletAddress and name are required' });
         }
         const { WalletAddress, name } = req.body;
+        const userExist=await Profile.findOne({WalletAddress:WalletAddress});
+        if(userExist){
+            return res.status(400).json({ message: 'Profile with this WalletAddress already exists' });
+        }
         const newProfile = new Profile({ WalletAddress, name }); // Use the correct model
         await newProfile.save(); // Save the instance to the database
         res.status(201).json(newProfile);
