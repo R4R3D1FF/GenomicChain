@@ -20,24 +20,6 @@ interface FileMetaData {
   ipfsHash: string;
 }
 
-// const mockData = {
-//   totalFiles: 12,
-//   totalSize: '2.4 GB',
-//   accessRequests: 3,
-//   recentActivity: [
-//     { id: 1, type: 'upload', file: 'genome_sequence_v2.fasta', date: '2 hours ago', user: 'You' },
-//     { id: 2, type: 'access_granted', file: 'genome_sequence_v1.fasta', date: '1 day ago', user: 'Dr. Sarah Johnson' },
-//     { id: 3, type: 'download', file: 'genome_sequence_v1.fasta', date: '1 day ago', user: 'Dr. Sarah Johnson' },
-//     { id: 4, type: 'access_revoked', file: 'proteomics_data.xlsx', date: '3 days ago', user: 'Medical Research Lab' },
-//   ],
-//   storedFiles: [
-//     { id: 1, name: 'genome_sequence_v2.fasta', size: '1.2 GB', date: '2 hours ago', access: 'Private', type: 'Genome Sequence' },
-//     { id: 2, name: 'genome_sequence_v1.fasta', size: '1.1 GB', date: '10/15/2023', access: 'Shared (2)', type: 'Genome Sequence' },
-//     { id: 3, name: 'proteomics_data.xlsx', size: '45 MB', date: '09/28/2023', access: 'Private', type: 'Proteomics Data' },
-//     { id: 4, name: 'medical_history.pdf', size: '12 MB', date: '08/05/2023', access: 'Shared (1)', type: 'Medical Records' },
-//   ]
-// };
-
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('files');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -47,6 +29,7 @@ const DashboardPage = () => {
   const [selectedFile, setSelectedFile] = useState<FileMetaData | null>(null);
   const [contract, setContract] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [CID, setCID] = useState<string | null>(null);
 
   const formatFileSize = (size: string) => {
     try {
@@ -89,18 +72,61 @@ const DashboardPage = () => {
     }
   };
 
-  const handleDownload = (file: FileMetaData) => {
+  const handleDownload = async (file: FileMetaData) => {
     if (!isOwner(file)) {
       notify("You can only download your own files");
       return;
     }
-    setSelectedFile(file);
+    try {
+      setSelectedFile(file);
+      console.log("IPFS Hash:", file.ipfsHash);
+      setCID(null);
+      await getFileCID(file.ipfsHash);
+      if (CID) {
+        confirmDownload();
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      notify("Error preparing download");
+    }
+  };
+
+  const getFileCID = async (ipfsHash: string) => {
+    try {
+      console.log("Fetching CID for hash:", ipfsHash);
+      const cid = await contract.getFile(ipfsHash);
+      console.log("Retrieved CID:", cid);
+      if (cid) {
+        setCID(cid);
+      } else {
+        console.error("Invalid CID received:", cid);
+        notify("Invalid file CID received");
+      }
+    } catch (error: any) {
+      console.error("Error getting CID:", error);
+      if (error.message && error.message.includes("Access denied")) {
+        notify("You don't have access to this file");
+      } else {
+        notify("Error getting file CID");
+      }
+    }
   };
 
   const confirmDownload = () => {
-    if (!selectedFile) return;
-    window.open('https://www.w3.org/Provider/Style/dummy.html');
+    if (!selectedFile) {
+      notify("No file selected");
+      return;
+    }
+    if (!CID) {
+      notify("File CID not available - please try again");
+      return;
+    }
+    console.log("Downloading file with CID:", CID);
+    const pinataGateway = "https://emerald-acute-goat-495.mypinata.cloud/ipfs/";
+    const downloadUrl = `${pinataGateway}${CID}`;
+    window.open(downloadUrl, '_blank');
     setSelectedFile(null);
+    setCID(null);
   };
 
   useEffect(() => {
@@ -108,6 +134,12 @@ const DashboardPage = () => {
       fetchFiles();
     }
   }, [walletAddress, contract]);
+
+  useEffect(() => {
+    if (selectedFile && CID) {
+      confirmDownload();
+    }
+  }, [CID, selectedFile]);
 
   const handleRefresh = async () => {
     if (!walletAddress || !contract) {
@@ -139,7 +171,7 @@ return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
           <h3 className="text-lg font-medium mb-4">Download File</h3>
-          <p>Download {selectedFile.fileName} from IPFS?</p>
+          <p>Download {selectedFile.fileName} from Pinata IPFS?</p>
           <div className="mt-4 flex justify-end space-x-3">
             <button
               onClick={() => setSelectedFile(null)}
@@ -298,7 +330,7 @@ return (
                   {loading ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-4 text-center">
-                        Loading files...
+                        Connect Wallet
                       </td>
                     </tr>
                   ) : files.length === 0 ? (
