@@ -101,23 +101,23 @@ const Navbar = () => {
                     className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
                   >
                     <div className="py-1" role="menu" aria-orientation="vertical">
-                      <Link
+                      {/* <Link
                         href="/auth/login"
                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         role="menuitem"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         Sign in
-                      </Link>
-                      <Link
+                      </Link> */}
+                      {/* <Link
                         href="/auth/signup"
                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         role="menuitem"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         Sign up
-                      </Link>
-                      <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                      </Link> */}
+                      {/* <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div> */}
                       <Link
                         href="/dashboard"
                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -185,7 +185,7 @@ const Navbar = () => {
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Account</p>
                 </div>
                 <div className="mt-3 space-y-1">
-                  <Link
+                  {/* <Link
                     href="/auth/login"
                     className="block py-2 px-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-dna-blue dark:hover:text-dna-green"
                     onClick={() => setIsOpen(false)}
@@ -198,7 +198,7 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     Sign up
-                  </Link>
+                  </Link> */}
                   <Link
                     href="/dashboard"
                     className="block py-2 px-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-dna-blue dark:hover:text-dna-green"

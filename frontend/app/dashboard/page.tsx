@@ -35,9 +35,9 @@ const DashboardPage = () => {
     try {
       const bytes = BigInt(size);
       if (bytes < BigInt(1024)) return `${bytes} B`;
-      if (bytes < BigInt(1024) * BigInt(1024)) return `${Number(bytes) / 1024} KB`;
-      if (bytes < BigInt(1024) * BigInt(1024) * BigInt(1024)) return `${Number(bytes) / (1024 * 1024)} MB`;
-      return `${Number(bytes) / (1024 * 1024 * 1024)} GB`;
+      if (bytes < BigInt(1024) * BigInt(1024)) return `${Math.floor(Number(bytes) / 1024)} KB`;
+      if (bytes < BigInt(1024) * BigInt(1024) * BigInt(1024)) return `${Math.floor(Number(bytes) / (1024 * 1024))} MB`;
+      return `${Math.floor(Number(bytes) / (1024 * 1024 * 1024))} GB`;
     } catch (e) {
       return size;
     }
@@ -48,7 +48,7 @@ const DashboardPage = () => {
   };
 
   const handleConnect = async () => {
-    const wallet = await connectWallet();
+    const wallet = await connectWallet(); 
     if (wallet) {
         setWalletAddress(wallet.address);
         notify("Wallet connected");
