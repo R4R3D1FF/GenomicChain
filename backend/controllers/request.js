@@ -1,16 +1,19 @@
 import request from '../models/request.js';
 import profile from '../models/profile.js';
+import { createProfile } from './profile.js';
 
 export const createRequest = async (req, res) => {
     try {
-        if(!req.body.requestedTo || !req.body.requestFrom || !req.body.filehash || !req.body.researchPurpose || !req.body.fileName) {
+        console.log(req.body)
+        if(!req.body.requestedTo || !req.body.requestFrom || !req.body.filehash || !req.body.fileName) {
             return res.status(400).json({ message: 'All fields are required' });
         }
+        
         const { requestedTo, requestFrom, filehash, researchPurpose, fileName } = req.body;
         const newRequest = new request({ requestedTo, requestFrom, filehash, researchPurpose, fileName });
         await newRequest.save();
         const newProfile=await profile.findOneAndUpdate({ WalletAddress: requestedTo }, { $push: { allRequests: newRequest._id } }, { new: true });
-
+        
         res.status(201).json(newRequest);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -19,7 +22,9 @@ export const createRequest = async (req, res) => {
 
 export const getRequest = async (req, res) => {
     try {
-        const { WalletAddress } = req.body;
+        console.log("lol");
+        const { WalletAddress } = req.params.walletAddress;
+        console.log(WalletAddress);
         const user = await profile.findOne({ WalletAddress: WalletAddress });
         if(!user){
             return res.status(404).json({ message: 'User not found' });

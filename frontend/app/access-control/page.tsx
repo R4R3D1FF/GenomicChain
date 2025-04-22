@@ -78,35 +78,65 @@ const AccessControlPage = () => {
     getRequest();
   },[])
 
-  const getRequest= async ()=>{
-    try{
+  const createProfile = async (walletAddress: string, name: string) => {
+    try {
+      if (!walletAddress || !name) {
+        return alert('WalletAddress and name are required');
+      }
+      const dummy="dummy"
+      const response = await fetch('http://localhost:4000/api/v1/profile/createProfile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ WalletAddress: walletAddress, name:dummy }),
+      });
+  
+      if (!response.ok) {
+        const errorBody = await response.text(); // Log the response body for debugging
+        console.error('Failed to create profile:', errorBody);
+        throw new Error(`Failed to create profile: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Profile created:', data);
+      alert('Profile created successfully!');
+    } catch (error) {
+      console.error('Error from createProfile:', error);
+    }
+  };
+
+  const getRequest = async () => {
+    try {
       const wallet = await connectWallet();
       if (!wallet) {
         throw new Error('Failed to connect wallet');
       }
       const walletAddress = wallet.address;
       setWalletAddress(walletAddress);
-      
-      const response = await fetch('/api/v1/request/getRequest', {
+
+      await createProfile(walletAddress,"lol");
+  
+      const response = await fetch(`http://localhost:4000/api/v1/request/getRequest/${walletAddress}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          'WalletAddress': walletAddress
-        })
       });
-
+  
       if (!response.ok) {
-        throw new Error('Failed to fetch requests');
+        const errorBody = await response.text(); // Log the response body for debugging
+        console.error('Failed to fetch requests:', errorBody);
+        throw new Error(`Failed to fetch requests: ${response.statusText}`);
       }
-
+  
       const data = await response.json();
       setRequests(data);
-    }catch(error){
-      console.error("error from getRequest:", error);
+      console.log('requestData', data);
+    } catch (error) {
+      console.error('Error from getRequest:', error);
     }
-  }
+  };
 
   const registerUser = async (userAddress:any) => {
     const contract = await getContract();
@@ -520,4 +550,4 @@ const AccessControlPage = () => {
   );
 };
 
-export default AccessControlPage; 
+export default AccessControlPage;

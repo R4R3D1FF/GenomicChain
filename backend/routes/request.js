@@ -4,7 +4,7 @@ import { createRequest, getRequest, approveRequest, rejectRequest } from '../con
 const router = express.Router();
 
 router.post('/createRequest', createRequest);
-router.get('/getRequest', getRequest);
+router.get('/getRequest/:walletAddress', getRequest);
 router.post('/approveRequest', approveRequest);
 router.post('/rejectRequest', rejectRequest);
 
