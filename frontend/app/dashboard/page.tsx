@@ -183,7 +183,6 @@ const DashboardPage = () => {
       setLoading(true);
       const filesData = await contract.getAllFiles();
       setFiles(filesData);
-      console.log("Fetched files:", filesData[0][1]);
     } catch (error) {
       console.error("Error fetching files:", error);
       notify("Error fetching files");
@@ -290,7 +289,7 @@ const DashboardPage = () => {
             <input
               type="text"
               placeholder="Enter your name"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md mb-4"
+              className="w-full px-3 py-2 text-black border border-gray-300 dark:border-gray-600 rounded-md mb-4"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
