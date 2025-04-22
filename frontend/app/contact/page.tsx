@@ -79,7 +79,7 @@ const ContactPage = () => {
       icon: <FiMapPin className="w-6 h-6" />,
       title: 'Office',
       description: 'Come say hello at our headquarters.',
-      contact: '123 Innovation Drive, San Francisco, CA 94107'
+      contact: 'Address'
     }
   ];
 
@@ -304,8 +304,7 @@ const ContactPage = () => {
                 <div className="text-center p-4">
                   <FiMapPin className="h-10 w-10 text-dna-blue mx-auto mb-2" />
                   <p className="text-gray-600 dark:text-gray-300">
-                    123 Innovation Drive<br />
-                    San Francisco, CA 94107
+                    Address
                   </p>
                 </div>
               </div>

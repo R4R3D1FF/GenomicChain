@@ -50,11 +50,11 @@ const Footer = () => {
                       Features
                     </Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link href="/pricing" className="text-base text-gray-600 dark:text-gray-400 hover:text-dna-blue dark:hover:text-dna-green">
                       Pricing
                     </Link>
-                  </li>
+                  </li> */}
                   <li>
                     <Link href="/security" className="text-base text-gray-600 dark:text-gray-400 hover:text-dna-blue dark:hover:text-dna-green">
                       Security
