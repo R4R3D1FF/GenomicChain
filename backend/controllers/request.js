@@ -23,8 +23,8 @@ export const createRequest = async (req, res) => {
 export const getRequest = async (req, res) => {
     try {
         console.log("lol");
+        console.log(req.params);
         const { WalletAddress } = req.params.walletAddress;
-        console.log(WalletAddress);
         const user = await profile.findOne({ WalletAddress: WalletAddress });
         if(!user){
             return res.status(404).json({ message: 'User not found' });

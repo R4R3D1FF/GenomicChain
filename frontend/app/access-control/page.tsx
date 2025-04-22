@@ -115,7 +115,7 @@ const AccessControlPage = () => {
       const walletAddress = wallet.address;
       setWalletAddress(walletAddress);
 
-      await createProfile(walletAddress,"lol");
+      // await createProfile(walletAddress,"lol");
   
       const response = await fetch(`http://localhost:4000/api/v1/request/getRequest/${walletAddress}`, {
         method: 'GET',

@@ -47,9 +47,11 @@ const DashboardPage = () => {
     try {
       const bytes = BigInt(size);
       if (bytes < BigInt(1024)) return `${bytes} B`;
-      if (bytes < BigInt(1024) * BigInt(1024)) return `${Math.floor(Number(bytes) / 1024)} KB`;
-      if (bytes < BigInt(1024) * BigInt(1024) * BigInt(1024)) return `${Math.floor(Number(bytes) / (1024 * 1024))} MB`;
-      return `${Math.floor(Number(bytes) / (1024 * 1024 * 1024))} GB`;
+      if (bytes < BigInt(1024) * BigInt(1024))
+        return `${Number(bytes) / 1024} KB`;
+      if (bytes < BigInt(1024) * BigInt(1024) * BigInt(1024))
+        return `${Number(bytes) / (1024 * 1024)} MB`;
+      return `${Number(bytes) / (1024 * 1024 * 1024)} GB`;
     } catch (e) {
       return size;
     }
@@ -368,149 +370,195 @@ const DashboardPage = () => {
           </nav>
         </div>
 
-      {/* Tab Content */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        {activeTab === 'files' && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Stored DNA Data</h3>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => fetchFiles()}
-                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-dna-blue dark:hover:text-dna-blue flex items-center"
-                  disabled={loading}
-                >
-                  <FiRefreshCw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-                  Refresh
-                </button>
+        {/* Tab Content */}
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {activeTab === "files" && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  Stored DNA Data
+                </h3>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => fetchFiles()}
+                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-dna-blue dark:hover:text-dna-blue flex items-center"
+                    disabled={loading}
+                  >
+                    <FiRefreshCw
+                      className={`w-4 h-4 mr-1 ${
+                        loading ? "animate-spin" : ""
+                      }`}
+                    />
+                    Refresh
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-900">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Size
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Access
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {loading ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <td colSpan={6} className="px-6 py-4 text-center">
-                        Connect Wallet
-                      </td>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Name
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Type
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Size
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Date
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Access
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Actions
+                      </th>
                     </tr>
-                  ) : files.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-4 text-center">
-                        No files found
-                      </td>
-                    </tr>
-                  ) : (
-                    files.map((file, index) => (
-                      <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">{file.fileName}</div>
+                  </thead>
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {loading ? (
+                      <tr>
+                        <td colSpan={6} className="px-6 py-4 text-center">
+                          Connect Wallet
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500 dark:text-gray-400">{file.fileType}</div>
+                      </tr>
+                    ) : files.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-6 py-4 text-center">
+                          No files found
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500 dark:text-gray-400">{formatFileSize(file.fileSize)}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500 dark:text-gray-400">{file.timestamp}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            isOwner(file)
-                              ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                              : 'bg-dna-green/10 text-dna-green dark:bg-dna-green/20'
-                          }`}>
-                            {isOwner(file) ? (
-                              <FiLock className="mr-1 w-3 h-3" />
-                            ) : (
-                              <FiUsers className="mr-1 w-3 h-3" />
-                            )}
-                            {isOwner(file) ? 'Private' : 'Shared'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-3">
-                            {isOwner(file) && (
-                              <button
+                      </tr>
+                    ) : (
+                      files.map((file, index) => (
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                              {file[0].fileName}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {file[0].fileType}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {formatFileSize(file[0].fileSize)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {file[0].timestamp}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                !file[1]
+                                  ? "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                                  : "bg-dna-green/10 text-dna-green dark:bg-dna-green/20"
+                              }`}
+                            >
+                              {!file[1]? (
+                                <FiLock className="mr-1 w-3 h-3" />
+                              ) : (
+                                <FiUsers className="mr-1 w-3 h-3" />
+                              )}
+                              {!file[1]? "Private" : "Shared"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-3">
+                              {(file[1]===true) ?(
+                                <button
                                 onClick={() => handleDownload(file)}
                                 className="text-dna-blue hover:text-dna-blue-dark"
                                 title="Download"
-                              >
-                                <FiDownload className="w-4 h-4" />
+                                >
+                                  <FiDownload className="w-4 h-4" />
+                                </button>
+                              ):
+                              (
+                               <button
+                                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-dna-green hover:bg-dna-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dna-green"
+                                 onClick={()=>createRequest(file[0].owner,file[0].ipfsHash,"yess",file[0].fileName)}
+                               >
+                                 Get Access
+                               </button>
+                             ) }
+                              <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                                {!file[1] ? (
+                                  <FiLock className="w-4 h-4" />
+                                ) : (
+                                  <FiUnlock className="w-4 h-4" />
+                                )}
                               </button>
-                            )}
-                            <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                              {isOwner(file) ? (
-                                <FiUnlock className="w-4 h-4" />
-                              ) : (
-                                <FiLock className="w-4 h-4" />
-                              )}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Showing <span className="font-medium">{files.length}</span> files
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Showing <span className="font-medium">{files.length}</span>{" "}
+                  files
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        
-        {/* ... other tab contents remain the same ... */}
-      </motion.div>
-      
-      {/* Notification Panel */}
-      {/* ... remains the same ... */}
+          )}
+
+          {/* ... other tab contents remain the same ... */}
+        </motion.div>
+
+        {/* Notification Panel */}
+        {/* ... remains the same ... */}
+      </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Slide}
+      />
     </div>
-    <ToastContainer
-      position="top-right"
-      autoClose={5000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="dark"
-      transition={Slide}
-    />
-  </div>
-);
+  );
 };
 
 export default DashboardPage;
