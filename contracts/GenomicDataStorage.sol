@@ -27,8 +27,6 @@ contract GenomicDataStorage is IERC165 {
         string cid;
         uint256 idxOfMetaData;
     }
-
-    
     
     // mapping(address => User) public users;
     mapping(string => File) private files;
