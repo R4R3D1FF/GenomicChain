@@ -306,7 +306,7 @@ const AccessControlPage = () => {
             >
               Pending Requests
             </button>
-            <button
+            {/* <button
               onClick={() => setActiveTab('permissions')}
               className={`py-4 px-1 font-medium text-sm border-b-2 ${
                 activeTab === 'permissions'
@@ -315,7 +315,7 @@ const AccessControlPage = () => {
               }`}
             >
               Active Permissions
-            </button>
+            </button> */}
           </nav>
         </div>
         

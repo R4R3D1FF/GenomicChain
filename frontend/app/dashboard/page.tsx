@@ -59,6 +59,7 @@ const DashboardPage = () => {
     const wallet = await connectWallet();
     if (wallet) {
       setWalletAddress(wallet.address);
+      
       notify("Wallet connected");
       console.log("Getting contract...");
       const contract = await getContract();
@@ -67,7 +68,7 @@ const DashboardPage = () => {
     }
   };
 
-  const createRequest=async (requestedTo, filehash, researchPurpose, fileName)=>{
+  const createRequest=async (requestedTo: any, filehash: any, researchPurpose: string, fileName: any)=>{
     try{
       const wallet = await connectWallet();
       if (!wallet) {
