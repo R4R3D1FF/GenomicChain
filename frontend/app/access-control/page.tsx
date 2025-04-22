@@ -137,11 +137,11 @@ const AccessControlPage = () => {
       // Include the required payment (e.g., 0.01 Ether)
       const paymentAmount = ethers.parseEther("0.1");
       const tx = await contract.grantAccess(ipfsHash, sharedUser,{ value: paymentAmount });
-  
+      
       const receipt = await tx.wait();
       alert("Access granted!");
       if (!receipt) return alert("Transaction failed!");
-  
+      
       const response = await fetch('http://localhost:4000/api/v1/request/approveRequest', {
         method: 'POST',
         headers: {
@@ -152,25 +152,27 @@ const AccessControlPage = () => {
           WalletAddress: walletAddress,
         }),
       });
-  
+      
     } catch (error) {
       console.error("error from grantAccess:", error);
     }
   };
-
+  
   const revokeAccess = async (requestId:any,sharedUser:any,ipfsHash:any) => {
-
+    
     const contract = await getContract();
     // cosnt ipfsHash=Response.ipfsHash 
     // const sharedUser=Response.userAddress 
     try{
       if (!contract || !sharedUser) return alert("Enter a valid address");
-      const tx = await contract.revokeAccess(ipfsHash, sharedUser);
+      // Include the required payment (e.g., 0.01 Ether)
+      const paymentAmount = ethers.parseEther("0.1");
+      const tx = await contract.grantAccess(ipfsHash, sharedUser,{ value: paymentAmount });
       const receipt=await tx.wait();
       alert("Access revoked!");
       if(!receipt) return alert("Transaction failed!");
 
-      const response = await fetch('/api/v1/request/rejectRequest', {
+      const response = await fetch('http://localhost:4000/api/v1/request/rejectRequest', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -203,17 +205,17 @@ const AccessControlPage = () => {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Access Control</h1>
             <p className="text-gray-600 dark:text-gray-300">Manage permissions for your genomic data</p>
           </div>
-          <div className="mt-4 md:mt-0 flex space-x-3">
+          {/* <div className="mt-4 md:mt-0 flex space-x-3">
             <button className="dna-button flex items-center space-x-2">
               <FiPlus className="w-4 h-4" />
               <span>Grant New Access</span>
             </button>
-          </div>
+          </div> */}
         </motion.div>
         
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <motion.div 
+          {/* <motion.div 
             className="dna-card"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -228,7 +230,7 @@ const AccessControlPage = () => {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{mockData.activePermissions.length}</h3>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
           
           <motion.div 
             className="dna-card"
@@ -242,12 +244,12 @@ const AccessControlPage = () => {
               </div>
               <div>
                 <p className="text-gray-500 dark:text-gray-400 text-sm">Pending Requests</p>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{mockData.pendingRequests.length}</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{requests.length}</h3>
               </div>
             </div>
           </motion.div>
           
-          <motion.div 
+          {/* <motion.div 
             className="dna-card"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -264,7 +266,7 @@ const AccessControlPage = () => {
                 </h3>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
         
         {/* Search and Filter */}
@@ -476,7 +478,9 @@ const AccessControlPage = () => {
                               {permission.lastAccessed}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <button className="text-dna-red hover:text-dna-red-dark">
+                              <button className="text-dna-red hover:text-dna-red-dark"
+                                onClick={() => revokeAccess(permission._id, permission.user.name, permission.files[0])}
+                              >
                                 Revoke
                               </button>
                             </td>
