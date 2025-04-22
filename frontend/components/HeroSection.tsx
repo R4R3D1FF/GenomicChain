@@ -101,9 +101,9 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
             >
-              <Link href="/auth/signup" className="dna-button text-center py-4 px-8 text-lg font-medium rounded-xl hover:scale-105 transition-transform">
+              {/* <Link href="/auth/signup" className="dna-button text-center py-4 px-8 text-lg font-medium rounded-xl hover:scale-105 transition-transform">
                 Get Started
-              </Link>
+              </Link> */}
               <Link href="#features" className="bg-transparent text-gray-900 dark:text-white py-4 px-8 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 text-center text-lg font-medium flex items-center justify-center group">
                 Learn More
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">

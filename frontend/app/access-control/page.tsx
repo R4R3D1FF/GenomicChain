@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiUsers, FiUserCheck, FiUserX, FiSearch, FiFilter, FiPlus, FiCheck, FiX, FiAlertTriangle, FiClock } from 'react-icons/fi';
 import { getContract } from '@/utils/getContract';
 import Link from 'next/link';
+import { connectWallet } from '@/utils/wallet';
 
 const mockData = {
   pendingRequests: [
@@ -70,6 +71,42 @@ const mockData = {
 const AccessControlPage = () => {
   const [activeTab, setActiveTab] = useState('requests');
   const [searchQuery, setSearchQuery] = useState('');
+  const [requests, setRequests] = useState<any[]>([]);
+  const [walletAddress, setWalletAddress] = useState('');
+
+  useEffect(() => {
+    getRequest();
+  },[])
+
+  const getRequest= async ()=>{
+    try{
+      const wallet = await connectWallet();
+      if (!wallet) {
+        throw new Error('Failed to connect wallet');
+      }
+      const walletAddress = wallet.address;
+      setWalletAddress(walletAddress);
+      
+      const response = await fetch('/api/v1/request/getRequest', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'WalletAddress': walletAddress
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch requests');
+      }
+
+      const data = await response.json();
+      setRequests(data);
+    }catch(error){
+      console.error("error from getRequest:", error);
+    }
+  }
 
   const registerUser = async (userAddress:any) => {
     const contract = await getContract();
@@ -90,30 +127,56 @@ const AccessControlPage = () => {
     }
   };
 
-  const grantAccess = async () => {
+  const grantAccess = async (requestId:any,sharedUser:any,ipfsHash:any) => {
     const contract = await getContract();
     // cosnt ipfsHash=Response.ipfsHash 
     // const sharedUser=Response.userAddress 
     try{
       if (!contract || !sharedUser) return alert("Enter a valid address");
       const tx = await contract.grantAccess(ipfsHash, sharedUser);
-      await tx.wait();
+      const receipt=await tx.wait();
       alert("Access granted!");
+      if(!receipt) return alert("Transaction failed!");
+
+      const response = await fetch('/api/v1/request/approveRequest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'requestId': requestId,
+          'WalletAddress': walletAddress
+        })
+      });
+
     }catch(error){
       console.error("error from grantAccess:", error);
     }
   };
 
-  const revokeAccess = async () => {
+  const revokeAccess = async (requestId:any,sharedUser:any,ipfsHash:any) => {
+
     const contract = await getContract();
     // cosnt ipfsHash=Response.ipfsHash 
     // const sharedUser=Response.userAddress 
-
     try{
       if (!contract || !sharedUser) return alert("Enter a valid address");
       const tx = await contract.revokeAccess(ipfsHash, sharedUser);
-      await tx.wait();
+      const receipt=await tx.wait();
       alert("Access revoked!");
+      if(!receipt) return alert("Transaction failed!");
+
+      const response = await fetch('/api/v1/request/rejectRequest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'requestId': requestId,
+          'WalletAddress': walletAddress
+        })
+      });
+
     }catch(error){
       console.error("error from revokeAccess:", error);
     }
@@ -256,31 +319,42 @@ const AccessControlPage = () => {
           {/* Pending Requests Tab */}
           {activeTab === 'requests' && (
             <>
-              {mockData.pendingRequests.length > 0 ? (
+              {/* {mockData.pendingRequests.length > 0 ? ( */}
+              {requests.length > 0 ? (
                 <div className="space-y-6">
-                  {mockData.pendingRequests.map((request) => (
+                  {/* {mockData.pendingRequests.map((request) => ( */}
+                   {requests && requests.map((request: any) => (
                     <div key={request.id} onClick={() => registerUser(request.address)} className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
                       <div className="p-6">
                         <div className="flex flex-col md:flex-row justify-between">
                           <div className="flex items-start space-x-4">
                             <div className="w-12 h-12 rounded-full bg-dna-blue/10 dark:bg-dna-blue/20 flex items-center justify-center text-dna-blue">
-                              {request.user.name[0]}
+                              {/* {request.user.name[0]} */}
+                              {request.requestFrom.name[0]}
                             </div>
                             <div>
-                              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{request.user.name}</h3>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">{request.user.organization} • {request.type}</p>
+                              {/* <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{request.user.name}</h3> */}
+                              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{request.requestFrom}</h3>
+
+                              {/* have not added this field inn backend till now  */}
+                              {/* <p className="text-sm text-gray-500 dark:text-gray-400">{request.user.organization} • {request.type}</p> */}
                               <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
                                 <FiClock className="w-3 h-3 mr-1" />
-                                Requested {request.date}
+                                {/* Requested {request.date} */}
+                                Requested {Math.floor((Date.now() - Date.parse(request.requestCreatedAt)) / (1000 * 60 * 60))} hours ago
                               </div>
                             </div>
                           </div>
                           <div className="mt-4 md:mt-0 flex items-center space-x-3">
-                            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-dna-green hover:bg-dna-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dna-green">
+                            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-dna-green hover:bg-dna-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dna-green"
+                              onClick={() => grantAccess(request.id, request.requestFrom, request.filehash)}
+                              >
                               <FiCheck className="w-4 h-4 mr-2" />
                               Approve
                             </button>
-                            <button className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dna-red">
+                            <button className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dna-red"
+                              onClick={() => revokeAccess(request.id, request.requestFrom, request.filehash)}
+                            >
                               <FiX className="w-4 h-4 mr-2" />
                               Deny
                             </button>
@@ -293,21 +367,27 @@ const AccessControlPage = () => {
                             <div>
                               <p className="text-xs text-gray-500 dark:text-gray-400">Files Requested</p>
                               <ul className="mt-1 space-y-1">
-                                {request.files.map((file, index) => (
+                                {/* {request.files.map((file, index) => (
                                   <li key={index} className="text-sm text-gray-700 dark:text-gray-300">
                                     {file}
                                   </li>
-                                ))}
+                                ))} */}
+                                
+                                  <li className="text-sm text-gray-700 dark:text-gray-300">
+                                    {request.fileName}
+                                  </li>
+                               
                               </ul>
                             </div>
                             <div>
                               <p className="text-xs text-gray-500 dark:text-gray-400">Research Purpose</p>
-                              <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{request.purpose}</p>
+                              {/* <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{request.purpose}</p> */}
+                              <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{request.researchPurpose}</p>
                             </div>
-                            <div>
+                            {/* <div>
                               <p className="text-xs text-gray-500 dark:text-gray-400">Requested Duration</p>
                               <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{request.duration}</p>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>

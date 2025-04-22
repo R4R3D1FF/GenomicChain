@@ -150,12 +150,12 @@ const AboutPage = () => {
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
             Experience the future of secure DNA storage with blockchain verification.
           </p>
-          <Link 
+          {/* <Link 
             href="/auth/signup" 
             className="dna-button inline-flex items-center text-white py-3 px-8 rounded-md text-lg font-medium"
           >
             Get Started <FiArrowRight className="ml-2" />
-          </Link>
+          </Link> */}
         </motion.div>
       </div>
     </div>

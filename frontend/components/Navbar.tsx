@@ -310,13 +310,13 @@ const Navbar = () => {
               </div>
               
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <Link
-                  href="/auth/signup"
-                  className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-dna-blue to-dna-green hover:from-dna-blue/90 hover:to-dna-green/90"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Get Started
-                </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-dna-blue to-dna-green hover:from-dna-blue/90 hover:to-dna-green/90"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Get Started
+                  </Link>
               </div>
             </div>
           </motion.div>
