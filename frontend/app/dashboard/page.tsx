@@ -47,11 +47,9 @@ const DashboardPage = () => {
     try {
       const bytes = BigInt(size);
       if (bytes < BigInt(1024)) return `${bytes} B`;
-      if (bytes < BigInt(1024) * BigInt(1024))
-        return `${Number(bytes) / 1024} KB`;
-      if (bytes < BigInt(1024) * BigInt(1024) * BigInt(1024))
-        return `${Number(bytes) / (1024 * 1024)} MB`;
-      return `${Number(bytes) / (1024 * 1024 * 1024)} GB`;
+      if (bytes < BigInt(1024) * BigInt(1024)) return `${Math.ceil(Number(bytes) / 1024)} KB`;
+      if (bytes < BigInt(1024) * BigInt(1024) * BigInt(1024)) return `${Math.ceil(Number(bytes) / (1024 * 1024))} MB`;
+      return `${Math.ceil(Number(bytes) / (1024 * 1024 * 1024))} GB`;
     } catch (e) {
       return size;
     }
