@@ -28,6 +28,23 @@ const mockData = {
     { id: 4, name: 'medical_history.pdf', size: '12 MB', date: '08/05/2023', access: 'Shared (1)', type: 'Medical Records' },
   ]
 };
+// const mockData = {
+//   totalFiles: 12,
+//   totalSize: '2.4 GB',
+//   accessRequests: 3,
+//   recentActivity: [
+//     { id: 1, type: 'upload', file: 'genome_sequence_v2.fasta', date: '2 hours ago', user: 'You' },
+//     { id: 2, type: 'access_granted', file: 'genome_sequence_v1.fasta', date: '1 day ago', user: 'Dr. Sarah Johnson' },
+//     { id: 3, type: 'download', file: 'genome_sequence_v1.fasta', date: '1 day ago', user: 'Dr. Sarah Johnson' },
+//     { id: 4, type: 'access_revoked', file: 'proteomics_data.xlsx', date: '3 days ago', user: 'Medical Research Lab' },
+//   ],
+//   storedFiles: [
+//     { id: 1, name: 'genome_sequence_v2.fasta', size: '1.2 GB', date: '2 hours ago', access: 'Private', type: 'Genome Sequence' },
+//     { id: 2, name: 'genome_sequence_v1.fasta', size: '1.1 GB', date: '10/15/2023', access: 'Shared (2)', type: 'Genome Sequence' },
+//     { id: 3, name: 'proteomics_data.xlsx', size: '45 MB', date: '09/28/2023', access: 'Private', type: 'Proteomics Data' },
+//     { id: 4, name: 'medical_history.pdf', size: '12 MB', date: '08/05/2023', access: 'Shared (1)', type: 'Medical Records' },
+//   ]
+// };
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('files');
@@ -122,30 +139,8 @@ const DashboardPage = () => {
               </p>
             </div>
           </motion.div>
-          
-          <motion.div 
-            className="dna-card bg-gradient-to-br from-dna-red/5 to-dna-red/10 dark:from-dna-red/10 dark:to-dna-red/20"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <div className="flex items-center">
-              <div className="p-3 rounded-lg bg-dna-red/20 dark:bg-dna-red/30 mr-4">
-                <FiActivity className="w-6 h-6 text-dna-red" />
-              </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Blockchain Activity</p>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">24</h3>
-              </div>
-            </div>
-            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                <Link href="/transactions" className="text-dna-red hover:underline">View transaction history →</Link>
-              </p>
-            </div>
-          </motion.div>
         </div>
-        
+
         {/* Tabs */}
         <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
           <nav className="flex space-x-8">
@@ -194,12 +189,12 @@ const DashboardPage = () => {
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white">Stored DNA Data</h3>
                 <div className="flex items-center space-x-2">
-                  <button className="text-sm text-gray-500 dark:text-gray-400 hover:text-dna-blue dark:hover:text-dna-blue">
+                  {/* <button className="text-sm text-gray-500 dark:text-gray-400 hover:text-dna-blue dark:hover:text-dna-blue">
                     Filter
                   </button>
                   <button className="text-sm text-gray-500 dark:text-gray-400 hover:text-dna-blue dark:hover:text-dna-blue">
                     Sort
-                  </button>
+                  </button> */}
                 </div>
               </div>
               <div className="overflow-x-auto">

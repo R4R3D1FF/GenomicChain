@@ -30,6 +30,7 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [fileSize, setFileSize] = useState<number>(0);
   const [Cid, setCid] = useState('');
+  const [timeStamp, setTimeStamp] = useState('');
 
   const uploadToIPFS = async () => {
     try {
@@ -58,8 +59,8 @@ const uploadFile = async () => {
     console.log("Contract instance:", contract);
     const paymentAmount = ethers.parseEther("0.1");
     console.log("IPFS Hash:", ipfsHash);
-    console.log("File Name:", fileName, ipfsHash,Cid, fileType, fileSize);
-    const tx = await contract.uploadFile(ipfsHash, fileName, Cid, fileType, fileSize, {
+    console.log("File Name:", fileName, ipfsHash,Cid, fileType, fileSize, timeStamp);
+    const tx = await contract.uploadFile(ipfsHash, fileName, Cid, fileType, fileSize, timeStamp, {
       value: paymentAmount
     });
     console.log("Transaction sent:", tx);
@@ -67,6 +68,8 @@ const uploadFile = async () => {
     console.log("Waiting for transaction confirmation...");
     const receipt = await tx.wait();
     console.log("Transaction confirmed:", receipt);
+    const data= await contract.getAllFiles();
+    console.log("All files:", data);
   } catch (error) {
     console.error("Error during uploadFile:", error);
   }
@@ -145,6 +148,9 @@ const uploadFile = async () => {
     // if (!selectedFile.type.includes('fastq') && !selectedFile.type.includes('fasta')) return;
     setFile(selectedFile);
     setFileSize(selectedFile.size);
+    const time = Math.floor(Date.now() / 1000);
+    const timeUTC = new Date(time * 1000).toUTCString();
+    setTimeStamp(timeUTC);
   };
 
   const handleUpload =async () => {
