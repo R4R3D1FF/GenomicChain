@@ -1,15 +1,21 @@
 'use client';
+import { connectWallet } from '@/utils/wallet';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiUser, FiChevronDown } from 'react-icons/fi';
+import {notify} from "@/utils/popups";
+import Cookies from 'js-cookie';
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [tempName, setTempName] = useState('');
   const pathname = usePathname();
 
   // Handle scroll events
@@ -21,12 +27,53 @@ const Navbar = () => {
         setIsScrolled(false);
       }
     };
+    
 
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    fetch('/api/auth/get-name', {
+      method: 'GET',
+      credentials: 'include', // ⬅️ important to include cookies
+    })
+      .then((res) => {
+        if (res.ok) {
+          console.log('User is authenticated (JWT cookie is present)');
+          return res;
+          
+        } else {
+          console.log('User is NOT authenticated');
+          return null;
+        }
+      })
+      .then((res) => {
+        if (res && res.ok){
+          return res.json();
+        }
+      })
+      .then((res) => {
+        if (res && 'name' in res)
+          setName(res.name);
+      })
+      .catch((err) => {
+        console.error('Error checking auth:', err);
+      });
+  }, [name]);
+
+  const handleConnect = async () => {
+    const wallet = await connectWallet();
+    if (wallet) {
+      Cookies.set('walletAddress', wallet.address, { expires: 1 });
+      notify("Wallet connected");
+      const timeout = setTimeout(() => {
+        window.location.href = '/dashboard'; // Redirect to the target page after 5 seconds
+      }, 2000);
+    }
+  };
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -35,6 +82,7 @@ const Navbar = () => {
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];
+
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -52,6 +100,43 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {
+        (Cookies.get('walletAddress') && name === '')?
+        <div>
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+            <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm">
+              <h2 className="text-xl font-semibold mb-4">Enter your name</h2>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                placeholder="Your name"
+              />
+              <button
+                onClick={()=>{
+                  setName(tempName)
+                  fetch('/api/auth/set-name', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json', // Indicate that the body is JSON
+                    },
+                    body: JSON.stringify({
+                      name: tempName,  // Send tempName state as 'name'
+                    }),
+                    credentials: 'include',
+                  });
+                  
+                }}
+                className="w-full dna-button items-center space-x-2 py-2 px-4 rounded-md"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+          </div>:
+          <></>
+        }
         <div className="flex justify-between items-center">
           {/* Improved Logo */}
           <Link href="/" className="group flex items-center">
@@ -82,54 +167,69 @@ const Navbar = () => {
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="relative">
-              <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center space-x-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-dna-blue dark:hover:text-dna-green focus:outline-none"
-              >
-                <FiUser className="h-5 w-5" />
-                <span>Account</span>
-                <FiChevronDown className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              <AnimatePresence>
-                {isUserMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+              {
+                (!Cookies.get('walletAddress'))?
+                <button
+                  onClick={handleConnect}
+                  className="dna-button flex items-center space-x-2 py-2 px-4 rounded-md"
+                >
+                  Connect Wallet
+                </button>
+                :
+                <div>
+                  <button
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center space-x-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-dna-blue dark:hover:text-dna-green focus:outline-none"
                   >
-                    <div className="py-1" role="menu" aria-orientation="vertical">
-                      <Link
-                        href="/auth/login"
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        role="menuitem"
-                        onClick={() => setIsUserMenuOpen(false)}
+                    <FiUser className="h-5 w-5" />
+                    <span>Account</span>
+                    <FiChevronDown className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  <AnimatePresence>
+                    {isUserMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
                       >
-                        Sign in
-                      </Link>
-                      <Link
-                        href="/auth/signup"
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        role="menuitem"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        Sign up
-                      </Link>
-                      <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                      <Link
-                        href="/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        role="menuitem"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                        <div className="py-1" role="menu" aria-orientation="vertical">
+                            <div
+                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              role="menuitem"
+                            >
+                              {name}
+                            </div>
+                            <div
+                              className="cursor-pointer block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              role="menuitem"
+                              onClick={async () => {
+                                await Cookies.remove('walletAddress')
+                                window.location.href = '/';
+                              }}
+                            >
+                              Sign Out
+                            </div>
+                            
+                          
+                          <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                          <Link
+                            href="/dashboard"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            role="menuitem"
+                            onClick={() => setIsUserMenuOpen(false)}
+                          >
+                            Dashboard
+                          </Link>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+              </div>
+              }
+              
             </div>
 
             {/* <Link

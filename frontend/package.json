@@ -3,23 +3,30 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npx prisma migrate dev && npx prisma generate && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^6.6.0",
     "@reduxjs/toolkit": "^2.6.1",
     "axios": "^1.8.4",
+    "cookie": "^1.0.2",
+    "dotenv": "^16.5.0",
     "ethers": "^6.13.5",
     "framer-motion": "^10.16.4",
     "genomic-chain": "file:",
+    "js-cookie": "^3.0.5",
+    "js-sha3": "^0.9.3",
     "next": "^14.0.1",
     "pinata": "^2.1.0",
+    "prisma": "^6.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "styled-components": "^6.1.17"
   },
   "devDependencies": {
     "@types/node": "^20.8.10",

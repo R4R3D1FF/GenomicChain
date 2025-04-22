@@ -58,7 +58,6 @@ const DashboardPage = () => {
         console.log("Contract instance:", contract);
     }
   };
-
   const fetchFiles = async () => {
     try {
       setLoading(true);
@@ -217,6 +216,7 @@ return (
               <FiUpload className="w-4 h-4" />
               <span>Upload DNA Data</span>
             </button>
+
             {!walletAddress && (
               <button
                 onClick={handleConnect}
