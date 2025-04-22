@@ -70,6 +70,7 @@ const mockData = {
 const AccessControlPage = () => {
   const [activeTab, setActiveTab] = useState('requests');
   const [searchQuery, setSearchQuery] = useState('');
+  const [request, setRequest] = useState();
 
   const registerUser = async (userAddress:any) => {
     const contract = await getContract();
