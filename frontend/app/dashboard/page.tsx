@@ -48,7 +48,7 @@ const DashboardPage = () => {
   };
 
   const handleConnect = async () => {
-    const wallet = await connectWallet(); 
+    const wallet = await connectWallet();
     if (wallet) {
         setWalletAddress(wallet.address);
         notify("Wallet connected");
@@ -392,7 +392,7 @@ return (
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-3">
-                            {isOwner(file) && (
+                            {isOwner(file) ? (
                               <button
                                 onClick={() => handleDownload(file)}
                                 className="text-dna-blue hover:text-dna-blue-dark"
@@ -400,7 +400,17 @@ return (
                               >
                                 <FiDownload className="w-4 h-4" />
                               </button>
-                            )}
+                            ):
+                            (
+                              <button
+                                onClick={() => handleDownload(file)}
+                                className="text-dna-blue hover:text-dna-blue-dark"
+                                title="Request Access"
+                              >
+                                <FiDownload className="w-4 h-4" />
+                              </button>
+                            )
+                            }
                             <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                               {isOwner(file) ? (
                                 <FiUnlock className="w-4 h-4" />

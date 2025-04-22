@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMenu, FiX, FiUser, FiChevronDown } from 'react-icons/fi';
+import { FiMenu, FiX, FiUser, FiChevronDown, FiGithub } from 'react-icons/fi';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +31,6 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Features', href: '/#features' },
-    // { name: 'Pricing', href: '/pricing' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];
@@ -52,35 +51,37 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          {/* Improved Logo */}
-          <Link href="/" className="group flex items-center">
-            {/* <span className="text-2xl transition-all duration-300 group-hover:rotate-3 group-hover:scale-110">🧬</span> */}
-            <div className="ml-0 transition-all duration-300 group-hover:translate-x-1">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link href="/" className="group flex items-center mr-8">
+            <div className="transition-all duration-300 group-hover:translate-x-1">
               <span className="font-bold text-xl tracking-tighter bg-gradient-to-r from-dna-blue to-dna-green bg-clip-text text-transparent group-hover:bg-gradient-to-br">Genomic</span>
               <span className="font-extrabold text-xl tracking-tight text-gray-900 dark:text-white group-hover:text-dna-blue dark:group-hover:text-dna-green">Chain</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`text-sm font-medium ${
-                  isActive(link.href)
-                    ? 'text-dna-blue dark:text-dna-green'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-dna-blue dark:hover:text-dna-green'
-                } transition-colors`}
-              >
-                {link.name}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center flex-1">
+            <div className="flex space-x-6 ml-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`text-sm font-medium ${
+                    isActive(link.href)
+                      ? 'text-dna-blue dark:text-dna-green'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-dna-blue dark:hover:text-dna-green'
+                  } transition-colors`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
           </nav>
 
-          {/* Desktop Right Actions */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-5 ml-10">
+
+            {/* Account Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -101,23 +102,6 @@ const Navbar = () => {
                     className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
                   >
                     <div className="py-1" role="menu" aria-orientation="vertical">
-                      {/* <Link
-                        href="/auth/login"
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        role="menuitem"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        Sign in
-                      </Link> */}
-                      {/* <Link
-                        href="/auth/signup"
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        role="menuitem"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        Sign up
-                      </Link> */}
-                      {/* <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div> */}
                       <Link
                         href="/dashboard"
                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -131,17 +115,20 @@ const Navbar = () => {
                 )}
               </AnimatePresence>
             </div>
-
-            {/* <Link
-              href="/auth/signup"
-              className="dna-button inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium"
+            {/* GitHub Button */}
+            <Link
+              href="https://github.com/R4R3D1FF/GenomicChain/tree/branch1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="GitHub repository"
             >
-              Get Started
-            </Link> */}
+              <FiGithub className="h-5 w-5" />
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden">
+          <div className="flex md:hidden ml-auto">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none"
@@ -154,7 +141,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Added GitHub link here too */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -182,23 +169,19 @@ const Navbar = () => {
               
               <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Account</p>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">External Links</p>
                 </div>
                 <div className="mt-3 space-y-1">
-                  {/* <Link
-                    href="/auth/login"
-                    className="block py-2 px-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-dna-blue dark:hover:text-dna-green"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Sign in
-                  </Link>
                   <Link
-                    href="/auth/signup"
-                    className="block py-2 px-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-dna-blue dark:hover:text-dna-green"
+                    href="https://github.com/R4R3D1FF/GenomicChain/tree/branch1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center py-2 px-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                     onClick={() => setIsOpen(false)}
                   >
-                    Sign up
-                  </Link> */}
+                    <FiGithub className="h-5 w-5 mr-2" />
+                    GitHub
+                  </Link>
                   <Link
                     href="/dashboard"
                     className="block py-2 px-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-dna-blue dark:hover:text-dna-green"
@@ -226,4 +209,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;
