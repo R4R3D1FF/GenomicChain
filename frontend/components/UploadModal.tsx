@@ -46,6 +46,7 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
         await setCid(cid);
         const hashedCID =await hashCID(cid);
         await setIpfsHash(hashedCID);
+        console.log("from function",hashedCID)
 
         console.log("CID:", cid);
     } catch (error) {
