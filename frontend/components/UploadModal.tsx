@@ -14,6 +14,7 @@ import { uploadCid } from 'pinata';
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onUploadSuccess?: () => void;
 }
 
 

@@ -111,7 +111,7 @@ contract GenomicDataStorage is IERC165 {
 
     function getFile(string memory ipfsHash) external view returns (string memory) {
         require(filesList[files[ipfsHash].idxOfMetaData].owner == msg.sender || fileAccess[ipfsHash][msg.sender], "Access denied");
-        return files[ipfsHash].ipfsHash;
+        return files[ipfsHash].cid;
     }
 
     function getAllFiles() external view returns (FileMetaData[] memory) {
