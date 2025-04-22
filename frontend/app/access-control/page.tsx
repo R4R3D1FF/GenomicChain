@@ -213,7 +213,7 @@ const AccessControlPage = () => {
         
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <motion.div 
+          {/* <motion.div 
             className="dna-card"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -228,7 +228,7 @@ const AccessControlPage = () => {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{mockData.activePermissions.length}</h3>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
           
           <motion.div 
             className="dna-card"
@@ -304,7 +304,7 @@ const AccessControlPage = () => {
             >
               Pending Requests
             </button>
-            <button
+            {/* <button
               onClick={() => setActiveTab('permissions')}
               className={`py-4 px-1 font-medium text-sm border-b-2 ${
                 activeTab === 'permissions'
@@ -313,7 +313,7 @@ const AccessControlPage = () => {
               }`}
             >
               Active Permissions
-            </button>
+            </button> */}
           </nav>
         </div>
         

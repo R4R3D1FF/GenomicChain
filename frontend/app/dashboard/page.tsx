@@ -59,6 +59,7 @@ const DashboardPage = () => {
     const wallet = await connectWallet();
     if (wallet) {
       setWalletAddress(wallet.address);
+      
       notify("Wallet connected");
       console.log("Getting contract...");
       const contract = await getContract();
