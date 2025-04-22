@@ -24,7 +24,7 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
-  const [ipfsHash, setIpfsHash] = useState('');
+  // const [ipfsHash, setIpfsHash] = useState('');
   const [fileName, setFileName] = useState('');
   const [fileType, setFileType] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +32,7 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
   const [fileSize, setFileSize] = useState<number>(0);
   const [Cid, setCid] = useState('');
   const [timeStamp, setTimeStamp] = useState('');
+  let ipfsHash:any;
 
   const uploadToIPFS = async () => {
     try {
@@ -45,8 +46,12 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
         console.log("CID is this:", cid);
         await setCid(cid);
         const hashedCID =await hashCID(cid);
-        await setIpfsHash(hashedCID);
-        console.log("from function",hashedCID)
+
+        console.log("before")
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        console.log("after")
+        ipfsHash = hashedCID;
+        console.log("from function",ipfsHash)
 
         console.log("CID:", cid);
     } catch (error) {
@@ -64,6 +69,7 @@ const uploadFile = async () => {
     console.log("Contract instance:", contract);
     const paymentAmount = ethers.parseEther("0.1");
     console.log("IPFS Hash:", ipfsHash);
+    
     console.log("File details:", { fileName, ipfsHash, Cid, fileType, fileSize, timeStamp });
     const tx = await contract.uploadFile(
       ipfsHash,
