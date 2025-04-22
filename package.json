@@ -12,6 +12,7 @@
     "ipfs": "^0.66.1",
     "ipfs-core": "^0.18.1",
     "ipfs-http-client": "^60.0.1",
-    "react-redux": "^9.2.0"
+    "react-redux": "^9.2.0",
+    "styled-components": "^6.1.17"
   }
 }

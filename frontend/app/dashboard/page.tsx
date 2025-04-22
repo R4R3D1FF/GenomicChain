@@ -260,6 +260,28 @@ return (
           </div>
         </motion.div>
 
+        <motion.div 
+            className="dna-card bg-gradient-to-br from-dna-green/5 to-dna-green/10 dark:from-dna-green/10 dark:to-dna-green/20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <div className="flex items-center">
+              <div className="p-3 rounded-lg bg-dna-green/20 dark:bg-dna-green/30 mr-4">
+                <FiUsers className="w-6 h-6 text-dna-green" />
+              </div>
+              <div>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Access Requests</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{}</h3>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                <Link href="/access-control" className="text-dna-green hover:underline">Review and respond →</Link>
+              </p>
+            </div>
+          </motion.div>
+
         {/* ... other stat cards remain the same ... */}
       </div>
 
