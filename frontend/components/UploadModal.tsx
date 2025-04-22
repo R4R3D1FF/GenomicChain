@@ -56,38 +56,24 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
 
 const uploadFile = async () => {
   try {
-    if (!ipfsHash || !fileName || !fileType) {
-      throw new Error("Missing required file information");
-    }
     console.log("Getting contract...");
     const contract = await getContract();
     console.log("Contract instance:", contract);
     const paymentAmount = ethers.parseEther("0.1");
     console.log("IPFS Hash:", ipfsHash);
-    console.log("File details:", { fileName, ipfsHash, Cid, fileType, fileSize, timeStamp });
-    const tx = await contract.uploadFile(
-      ipfsHash,
-      fileName,
-      Cid,
-      fileType,
-      fileSize,
-      timeStamp,
-      { value: paymentAmount }
-    );
-    console.log("Transaction sent:", tx.hash);
+    console.log("File Name:", fileName, ipfsHash,Cid, fileType, fileSize, timeStamp);
+    const tx = await contract.uploadFile(ipfsHash, fileName, Cid, fileType, fileSize, timeStamp, {
+      value: paymentAmount
+    });
+    console.log("Transaction sent:", tx);
+
+    console.log("Waiting for transaction confirmation...");
     const receipt = await tx.wait();
     console.log("Transaction confirmed:", receipt);
-    if (receipt.status === 1) {
-      console.log("Transaction successful");
-      const data = await contract.getAllFiles();
-      console.log("All files:", data);
-      return true;
-    } else {
-      throw new Error("Transaction failed");
-    }
+    const data= await contract.getAllFiles();
+    console.log("All files:", data);
   } catch (error) {
     console.error("Error during uploadFile:", error);
-    throw error;
   }
 };
 
@@ -169,29 +155,22 @@ const uploadFile = async () => {
     setTimeStamp(timeUTC);
   };
 
-  const handleUpload = async () => {
+  const handleUpload =async () => {
     if (!file) return;
     setIsUploading(true);
-    setUploadProgress(0);
-    try {
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          const newProgress = prev + Math.random() * 10;
-          return newProgress > 90 ? 90 : Math.round(newProgress);
-        });
-      }, 300);
-      await uploadToIPFS();
-      await uploadFile();
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-      setIsUploaded(true);
-    } catch (error) {
-      console.error("Upload failed:", error);
-      setIsUploading(false);
-      setUploadProgress(0);
-    } finally {
-      setIsUploading(false);
-    }
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 10;
+      if (progress > 100) {
+        progress = 100;
+        clearInterval(interval);
+        setIsUploaded(true);
+        setIsUploading(false);
+      }
+      setUploadProgress(Math.round(progress));
+    }, 300);
+    await uploadToIPFS();
+    await uploadFile();
   };
 
   const resetUpload = () => {
