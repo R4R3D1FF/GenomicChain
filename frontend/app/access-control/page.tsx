@@ -360,7 +360,7 @@ const AccessControlPage = () => {
                           <div className="flex items-start space-x-4">
                             <div className="w-12 h-12 rounded-full bg-dna-blue/10 dark:bg-dna-blue/20 flex items-center justify-center text-dna-blue">
                               {/* {request.user.name[0]} */}
-                              {request.requestFrom.name[0]}
+                              {/* {request.requestFrom.name[0]} */}
                             </div>
                             <div>
                               {/* <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{request.user.name}</h3> */}
