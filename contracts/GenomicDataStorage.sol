@@ -18,6 +18,7 @@ contract GenomicDataStorage is IERC165 {
         string fileName;
         string fileType;
         uint256 fileSize;
+        string timestamp;
         string ipfsHash;
     }
     
@@ -60,7 +61,7 @@ contract GenomicDataStorage is IERC165 {
     //     users[userAddress] = User(Role.NormalUser, true);
     // }
     
-    function uploadFile(string memory ipfsHash,string memory fileName, string memory cid, string memory fileType, uint256 fileSize) external payable {
+    function uploadFile(string memory ipfsHash,string memory fileName, string memory cid, string memory fileType, uint256 fileSize, string memory timestamp) external payable {
         // Require a minimum payment (e.g., 0.01 Ether)
         require(msg.value >= 0.01 ether, "Insufficient payment");
         // Ensure the file doesn't already exist
@@ -71,6 +72,7 @@ contract GenomicDataStorage is IERC165 {
             fileName: fileName,
             fileType: fileType,
             fileSize: fileSize,
+            timestamp: timestamp,
             ipfsHash: ipfsHash
         });
 
@@ -107,7 +109,7 @@ contract GenomicDataStorage is IERC165 {
 
     function getFile(string memory ipfsHash) external view returns (string memory) {
         require(filesList[files[ipfsHash].idxOfMetaData].owner == msg.sender || fileAccess[ipfsHash][msg.sender], "Access denied");
-        return files[ipfsHash].ipfsHash;
+        return files[ipfsHash].cid;
     }
 
     function getAllFiles() external view returns (FileMetaData[] memory) {
