@@ -67,7 +67,7 @@ const DashboardPage = () => {
     }
   };
 
-  const createRequest=async (requestedTo, filehash, researchPurpose, fileName)=>{
+  const createRequest=async (requestedTo: any, filehash: any, researchPurpose: string, fileName: any)=>{
     try{
       const wallet = await connectWallet();
       if (!wallet) {
