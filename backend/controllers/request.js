@@ -43,11 +43,13 @@ export const getRequest = async (req, res) => {
 export const approveRequest= async (req, res) => {
     try {
         const { requestId, WalletAddress } = req.body;
+        console.log(requestId, WalletAddress)
         const requestToApprove = await request.findById(requestId);
         if (!requestToApprove) {
             return res.status(404).json({ message: 'Request not found' });
         }
-
+        
+        console.log("hello from approve request")
         await profile.findOneAndUpdate(
             { WalletAddress: WalletAddress },
             { $pull: { allRequests: requestId } },
