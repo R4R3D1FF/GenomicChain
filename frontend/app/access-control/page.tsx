@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiUsers, FiUserCheck, FiUserX, FiSearch, FiFilter, FiPlus, FiCheck, FiX, FiAlertTriangle, FiClock } from 'react-icons/fi';
 import { getContract } from '@/utils/getContract';
+import { ethers } from 'ethers';
 import Link from 'next/link';
 import { connectWallet } from '@/utils/wallet';
 
@@ -74,38 +75,6 @@ const AccessControlPage = () => {
   const [requests, setRequests] = useState<any[]>([]);
   const [walletAddress, setWalletAddress] = useState('');
 
-  useEffect(() => {
-    getRequest();
-  },[])
-
-  const createProfile = async (walletAddress: string, name: string) => {
-    try {
-      if (!walletAddress || !name) {
-        return alert('WalletAddress and name are required');
-      }
-      const dummy="dummy"
-      const response = await fetch('http://localhost:4000/api/v1/profile/createProfile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ WalletAddress: walletAddress, name:dummy }),
-      });
-  
-      if (!response.ok) {
-        const errorBody = await response.text(); // Log the response body for debugging
-        console.error('Failed to create profile:', errorBody);
-        throw new Error(`Failed to create profile: ${response.statusText}`);
-      }
-  
-      const data = await response.json();
-      console.log('Profile created:', data);
-      alert('Profile created successfully!');
-    } catch (error) {
-      console.error('Error from createProfile:', error);
-    }
-  };
-
   const getRequest = async () => {
     try {
       const wallet = await connectWallet();
@@ -157,29 +126,34 @@ const AccessControlPage = () => {
     }
   };
 
-  const grantAccess = async (requestId:any,sharedUser:any,ipfsHash:any) => {
+  const grantAccess = async (requestId: any, sharedUser: any, ipfsHash: any) => {
     const contract = await getContract();
-    // cosnt ipfsHash=Response.ipfsHash 
-    // const sharedUser=Response.userAddress 
-    try{
-      if (!contract || !sharedUser) return alert("Enter a valid address");
-      const tx = await contract.grantAccess(ipfsHash, sharedUser);
-      const receipt=await tx.wait();
+    try {
+      await connectWallet();
+  
+      // Ensure the contract and sharedUser are valid
+      // if (!contract || !sharedUser) return alert("Enter a valid address");
+  
+      // Include the required payment (e.g., 0.01 Ether)
+      const paymentAmount = ethers.parseEther("0.1");
+      const tx = await contract.grantAccess(ipfsHash, sharedUser,{ value: paymentAmount });
+  
+      const receipt = await tx.wait();
       alert("Access granted!");
-      if(!receipt) return alert("Transaction failed!");
-
-      const response = await fetch('/api/v1/request/approveRequest', {
+      if (!receipt) return alert("Transaction failed!");
+  
+      const response = await fetch('http://localhost:4000/api/v1/request/approveRequest', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          'requestId': requestId,
-          'WalletAddress': walletAddress
-        })
+          requestId: requestId,
+          WalletAddress: walletAddress,
+        }),
       });
-
-    }catch(error){
+  
+    } catch (error) {
       console.error("error from grantAccess:", error);
     }
   };
@@ -211,6 +185,10 @@ const AccessControlPage = () => {
       console.error("error from revokeAccess:", error);
     }
   };
+
+  useEffect(() => {
+    getRequest();
+  },[grantAccess,revokeAccess]);
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
@@ -354,7 +332,7 @@ const AccessControlPage = () => {
                 <div className="space-y-6">
                   {/* {mockData.pendingRequests.map((request) => ( */}
                    {requests && requests.map((request: any) => (
-                    <div key={request.id} onClick={() => registerUser(request.address)} className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div key={request._id} onClick={() => registerUser(request.address)} className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
                       <div className="p-6">
                         <div className="flex flex-col md:flex-row justify-between">
                           <div className="flex items-start space-x-4">
@@ -377,13 +355,13 @@ const AccessControlPage = () => {
                           </div>
                           <div className="mt-4 md:mt-0 flex items-center space-x-3">
                             <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-dna-green hover:bg-dna-green/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dna-green"
-                              onClick={() => grantAccess(request.id, request.requestFrom, request.filehash)}
+                              onClick={() => grantAccess(request._id, request.requestFrom, request.filehash)}
                               >
                               <FiCheck className="w-4 h-4 mr-2" />
                               Approve
                             </button>
                             <button className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dna-red"
-                              onClick={() => revokeAccess(request.id, request.requestFrom, request.filehash)}
+                              onClick={() => revokeAccess(request._id, request.requestFrom, request.filehash)}
                             >
                               <FiX className="w-4 h-4 mr-2" />
                               Deny
