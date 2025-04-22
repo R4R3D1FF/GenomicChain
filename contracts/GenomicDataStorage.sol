@@ -19,6 +19,7 @@ contract GenomicDataStorage is IERC165 {
         string fileType;
         uint256 fileSize;
         string timestamp;
+        string ipfsHash;
     }
     
     struct File {
@@ -73,7 +74,8 @@ contract GenomicDataStorage is IERC165 {
             fileName: fileName,
             fileType: fileType,
             fileSize: fileSize,
-            timestamp: timestamp
+            timestamp: timestamp,
+            ipfsHash: ipfsHash
         });
 
         filesList.push(metaData);
